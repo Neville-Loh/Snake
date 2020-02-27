@@ -6,10 +6,12 @@ import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JPanel;
 
 import com.neville.game.entities.Body;
+import com.neville.game.entities.Food;
 
 public class Screen extends JPanel implements Runnable {
 	
@@ -24,6 +26,11 @@ public class Screen extends JPanel implements Runnable {
 	
 	private Body b;
 	private ArrayList<Body> snake;
+	private Food food;
+	private ArrayList<Food> foodList;
+	
+	private Random r;
+	
 	private int x = 10, y = 10;
 	private int size = 5;
 	private int ticks = 0;
@@ -40,8 +47,10 @@ public class Screen extends JPanel implements Runnable {
 		
 		//construct
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		r = new Random();
 		
 		snake = new ArrayList<Body>();
+		foodList = new ArrayList<Food>();
 		
 		start();
 	}
@@ -52,19 +61,85 @@ public class Screen extends JPanel implements Runnable {
 			b = new Body(x, y, 10);
 			snake.add(b);
 		}
-		if(ticks > 250000) {
-			if(right) x++;
-			if(left) x--;
-			if(up) y--;
-			if(down) y++;
+
+		for(int i = 0; i < snake.size(); i++) {
+			if(x == snake.get(i).getx() && y == snake.get(i).gety()) {
+				if (i != snake.size() - 1) {
+					stop();
+				}
+			}
+		}
+		
+		
+		
+		if(ticks > 750000) {
+			
+			// Turning when boarder is hit
+			if (x < 0) {
+				up = false;
+				down = true;
+				left = false;
+				right = false;
+				x++;
+				y++;
+			}
+			else if(x > 79){
+				up = true;
+				down = false;
+				left = false;
+				right = false;
+				x--;
+				y--;
+			}
+			
+			else if (y < 0) {
+				up = false;
+				down = false;
+				left = true;
+				right = false;
+				x--;
+				y++;
+			}
+			else if (y > 79) {
+				up = false;
+				down = false;
+				left = false;
+				right = true;
+				x++;
+				y--;
+			}
+			
+			// control
+			else {
+				if(right) x++;
+				if(left) x--;
+				if(up) y--;
+				if(down) y++;
+			}
 			
 			b = new Body(x, y, 10);
 			snake.add(b);
-			
-			ticks = 0;
-			
 			if(snake.size() > size) {
 				snake.remove(0);
+			
+			ticks = 0;
+			}
+			
+			if(foodList.size() == 0) {
+				int x = r.nextInt(79);
+				int y = r.nextInt(79);
+				
+				food = new Food(x, y, 10);
+				foodList.add(food);
+			}
+			
+			// Eating food
+			for (int i = 0; i < foodList.size(); i++) {
+				if (x == foodList.get(i).getx() && y == foodList.get(i).gety()) {
+					size++;
+					foodList.remove(i);
+					i--;
+				}
 			}
 		}
 		
@@ -89,6 +164,10 @@ public class Screen extends JPanel implements Runnable {
 		for(int i = 0; i< snake.size(); i++) {
 			snake.get(i).draw(g);
 		}
+		// drawing food
+		for (int i = 0; i < foodList.size(); i++) {
+			foodList.get(i).draw(g);
+		}
 	}
 	
 	public void start() {
@@ -100,6 +179,12 @@ public class Screen extends JPanel implements Runnable {
 	
 	public void stop() {
 		running = false;
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void run() {
@@ -135,6 +220,18 @@ public class Screen extends JPanel implements Runnable {
 				down = true;
 			}
 			
+			
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
 			
 		}
 		

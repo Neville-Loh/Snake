@@ -28,4 +28,19 @@ public class Body {
 		g.setColor(Color.GRAY);
 		g.fillRect(x * width + 2, y * width + 2, width - 4, height - 4);
 	}
+	
+	//getters
+	public int getx() {
+		return x;
+	}
+	public void setx(int x) {
+		this.x = x;
+	}
+	public int gety() {
+		return y;
+	}
+	public void sety(int y) {
+		this.y = y;
+	}
+	
 }
