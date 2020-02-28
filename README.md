@@ -1,3 +1,3 @@
 # Snake
 
-Classical Snake game writen in Java.
+Classical Snake game written in Java.
